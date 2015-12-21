@@ -6,20 +6,9 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
-CREATE OR REPLACE FUNCTION database_create_exists(d text) RETURNS void AS
-$$
-BEGIN
-IF EXISTS (SELECT 1 FROM pg_database WHERE datname = d ) THEN
-   RAISE NOTICE 'Database already exists'; 
-ELSE
-   RAISE NOTICE 'Database does not exist!';
-   -- CREATE DATABASE d;
-END IF;
-END;
-$$ LANGUAGE plpgsql;
+DROP DATABASE IF EXISTS tournament;
 
-
-SELECT database_create_exists('tournament');
+CREATE DATABASE tournament;
 
 \c tournament
 
