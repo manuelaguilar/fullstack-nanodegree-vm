@@ -34,4 +34,10 @@ CREATE TABLE IF NOT EXISTS standings (
 );
 
 ALTER SEQUENCE player_id owned by players.id;
-ALTER SEQUENCE match_id owned by matches.id
+ALTER SEQUENCE match_id owned by matches.id;
+
+CREATE OR REPLACE VIEW v_standings AS
+	SELECT s.id, p.name, s.wins, s.matches from players as p, standings as s where p.id = s.id order by s.wins desc, p.name asc;
+
+CREATE OR REPLACE VIEW v_matches_detail AS
+	SELECT m.id, m.winner as winner_id, p1.name as winner, m.loser as loser_id, p2.name as loser from matches m left join players p1 on m.winner = p1.id left join players p2 on  m.loser = p2.id;

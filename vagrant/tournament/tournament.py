@@ -71,7 +71,8 @@ def playerStandings():
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("SELECT s.id, p.name, s.wins, s.matches from players as p, standings as s where p.id = s.id")
+    #c.execute("SELECT s.id, p.name, s.wins, s.matches from players as p, standings as s where p.id = s.id")
+    c.execute("SELECT * from v_standings")
     results = c.fetchall()
 #    print "DEBUG:"
 #    print results
@@ -138,10 +139,6 @@ def swissPairings():
     DB.commit()
     DB.close()
     
-    #dummy = []
-    #tuple1 = [1,'player1',2,'player2']
-    #dummy.append(tuple1)
-    #return dummy
 #    print "DEBUG pairings:"
 #    print pairings
     return pairings
