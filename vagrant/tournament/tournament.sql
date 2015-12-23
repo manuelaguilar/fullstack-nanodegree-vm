@@ -12,22 +12,26 @@ CREATE DATABASE tournament;
 
 \c tournament
 
-CREATE SEQUENCE player_id START 100;
-CREATE SEQUENCE match_id START 1;
+CREATE SEQUENCE player_id START 100; ---owned by players.id;
+CREATE SEQUENCE match_id START 1; -- owned by matches.id;
 
 CREATE TABLE IF NOT EXISTS players (
-	id	integer	PRIMARY KEY,
+	id	integer	PRIMARY KEY default nextval('player_id'),
 	name	varchar(120) NOT NULL 
 );
 
 CREATE TABLE IF NOT EXISTS matches (
-	id	integer PRIMARY KEY,
-	player1_id	integer REFERENCES players (id),
-	player2_id	integer REFERENCES players (id),
-	winner_id 	integer REFERENCES players (id)
+	id	integer PRIMARY KEY default nextval('match_id'),
+	winner	integer REFERENCES players (id),
+	loser	integer REFERENCES players (id)
 );
 
+
 CREATE TABLE IF NOT EXISTS standings (
-	position integer UNIQUE,
-	points integer
+        id	integer references players(id) ON DELETE CASCADE, 
+	wins	integer,
+	matches integer
 );
+
+ALTER SEQUENCE player_id owned by players.id;
+ALTER SEQUENCE match_id owned by matches.id

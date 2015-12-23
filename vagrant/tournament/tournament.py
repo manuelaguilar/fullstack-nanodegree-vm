@@ -4,7 +4,7 @@
 #
 
 import psycopg2
-
+import itertools
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
@@ -13,15 +13,30 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
-
+    DB = connect()
+    c = DB.cursor()
+    #c.execute("DELETE from matches")
+    c.execute("TRUNCATE table matches RESTART IDENTITY")
+    DB.commit()
+    DB.close()
 
 def deletePlayers():
     """Remove all the player records from the database."""
-
+    DB = connect()
+    c = DB.cursor()
+    #c.execute("DELETE from players")
+    c.execute("TRUNCATE table players RESTART IDENTITY CASCADE")
+    DB.commit()
+    DB.close()
 
 def countPlayers():
     """Returns the number of players currently registered."""
-
+    DB = connect()
+    c = DB.cursor()
+    c.execute("SELECT count(1) from players")
+    count = c.fetchall()[0][0]
+    DB.close()
+    return count
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -32,7 +47,14 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-
+    DB = connect()
+    c = DB.cursor()
+    c.execute("INSERT INTO players (name) values (%s)" , (name,))
+    c.execute("SELECT id from players where name = %s" , (name,)) 
+    player_id = c.fetchall()[0][0]
+    c.execute("INSERT INTO standings (id, wins, matches) values ( %s, 0, 0 )" , (player_id,))
+    DB.commit()
+    DB.close()
 
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
@@ -47,7 +69,13 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-
+    DB = connect()
+    c = DB.cursor()
+    c.execute("SELECT s.id, p.name, s.wins, s.matches from players as p, standings as s where p.id = s.id")
+    results = c.fetchall()
+#    print "DEBUG:"
+#    print results
+    return results
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -56,7 +84,13 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    DB = connect()
+    c = DB.cursor()
+    c.execute("INSERT into matches (winner, loser) values (%s, %s)", (winner, loser))
+    c.execute("UPDATE standings set wins=wins+1 where id=%s", (winner,))
+    c.execute("UPDATE standings set matches=matches+1 where id in (%s, %s)", (winner, loser))
+    DB.commit()
+    DB.close()
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -73,5 +107,43 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    #set matching groups
+    DB = connect()
+    c = DB.cursor()
+    c.execute("SELECT wins FROM standings GROUP BY wins ORDER BY WINS DESC")
+    groups = [item[0] for item in c.fetchall()]
+#    print "DEBUG: groups"
+    pairings = []
+    for i in groups:
+#    	print "group: " 
+#        print i
+	c.execute("SELECT id from standings where wins=%s", (i,))
+        group_players = [item[0] for item in c.fetchall()]
+#        print "DEBUG group players:"
+#        print group_players
+        #combine players
+	possible_matches = itertools.combinations(group_players,2)
+        for match in possible_matches:
+            #discard matches in database
+            c.execute("SELECT 1 from matches where (winner=%s and loser=%s) or (winner=%s and loser=%s)", (match[0],match[1],match[1],match[0]))
+            played = c.fetchall()
+#            print played
+            if not played :
+    	        c.execute("SELECT id, name from players where id in %s", (match,))
+                match_players = c.fetchall()
+                pairings.append([match_players[0][0],match_players[0][1],match_players[1][0],match_players[1][1]])
+            else:
+#		print "match already played"
+            	possible_matches.remove((match[0],match[1]))
+    DB.commit()
+    DB.close()
+    
+    #dummy = []
+    #tuple1 = [1,'player1',2,'player2']
+    #dummy.append(tuple1)
+    #return dummy
+#    print "DEBUG pairings:"
+#    print pairings
+    return pairings
 
 
