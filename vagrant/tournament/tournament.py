@@ -113,29 +113,20 @@ def swissPairings():
     c = DB.cursor()
     c.execute("SELECT wins FROM standings GROUP BY wins ORDER BY WINS DESC")
     groups = [item[0] for item in c.fetchall()]
-#    print "DEBUG: groups"
     pairings = []
     for i in groups:
-#    	print "group: " 
-#        print i
 	c.execute("SELECT id from standings where wins=%s", (i,))
         group_players = [item[0] for item in c.fetchall()]
-#        print "DEBUG group players:"
-#        print group_players
         #combine players
 	possible_matches = itertools.combinations(group_players,2)
         for match in possible_matches:
             #discard matches in database
             c.execute("SELECT 1 from matches where (winner=%s and loser=%s) or (winner=%s and loser=%s)", (match[0],match[1],match[1],match[0]))
             played = c.fetchall()
-#            print played
             if not played :
     	        c.execute("SELECT id, name from players where id in %s", (match,))
                 match_players = c.fetchall()
                 pairings.append([match_players[0][0],match_players[0][1],match_players[1][0],match_players[1][1]])
-            else:
-#		print "match already played"
-            	possible_matches.remove((match[0],match[1]))
     DB.commit()
     DB.close()
     
