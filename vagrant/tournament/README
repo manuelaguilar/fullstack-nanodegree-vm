@@ -1,0 +1,9 @@
+Multi tournament simulator v0.1
+
+This project simulates tournament pairings for one or more tournaments.
+
+1. To execute this project, first setup the database by executing the tournament.sql script in psql.
+2. A json file is provided (atp_rankings.json). In order to modify the number of players, use the atp_rankings scrapy project and modify the vagrant/atp_rankings/atp_rankings/spiders/atp_rankings_spider.py file. Afterwards, execute the script run.sh in the atp_rankings directory.
+3. To run the basic requirements driver, run the tournament_test.py file.
+4. To run the multi tournament pairings driver, run the multi_tournament_test.py file.
+
