@@ -43,6 +43,8 @@ CREATE TABLE standings (
 	matches integer
 );
 
+
+
 CREATE TABLE tournament_matches (
         match_id integer REFERENCES matches(id) ,
         tournament_id integer REFERENCES tournament(id),
@@ -54,6 +56,16 @@ CREATE TABLE tournament_registry (
         player_id       integer REFERENCES players(id),
         UNIQUE (tournament_id, player_id)
 );
+
+CREATE VIEW v_standings_post AS
+       ---select tr.tournament_id, tr.player_id, count(m.winner),count(m.loser),count(m.draw),count(id) from tournament_registry tr, tournament_matches tm, matches m where tm.match_id=m.id and (tr.player_id=m.winner or tr.player_id=m.loser) group by tr.tournament_id, tr.player_id;
+       select tr.tournament_id, tr.player_id, 
+           sum (case when m.winner=tr.player_id and m.draw=false then 1 else 0 end) as wins,
+           sum (case when m.loser=tr.player_id and m.draw=false then 1 else 0 end) as losses,
+           sum (case when (m.winner=tr.player_id or m.loser=tr.player_id) and m.draw=true then 1 else 0 end) as draws,
+           sum (case when m.winner=tr.player_id or m.loser=tr.player_id then 1 else 0 end) as matches
+           from tournament_registry tr, tournament_matches tm, matches m where tm.match_id=m.id and tr.tournament_id=tm.tournament_id group by tr.tournament_id, tr.player_id;
+
 
 ALTER SEQUENCE player_id owned by players.id;
 ALTER SEQUENCE match_seq_id owned by matches.id;
@@ -118,4 +130,4 @@ insert into test_matches values (4,2,4,false);
 CREATE VIEW v_test AS
 	(select m.id as match,p.id as player,m.winner as opponent from test_players p join test_matches m on (p.id=m.winner or p.id=m.loser) and m.winner != p.id union
 select m.id as match,p.id as player,m.loser as opponent from test_players p join test_matches m on (p.id=m.winner or p.id=m.loser) and m.loser != p.id ) order by player;
-	
+

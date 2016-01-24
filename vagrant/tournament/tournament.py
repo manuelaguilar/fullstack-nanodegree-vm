@@ -115,6 +115,7 @@ def reportTournamentMatch(tournament_id,winner, loser, draw=False):
     """Records the outcome of a single match between two players.
 
     Args:
+      tournament_id: the id of an existing tournament
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
       draw: true or false if match was a draw or not.
