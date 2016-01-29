@@ -136,6 +136,8 @@ def testTournamentPairings():
         registerTournamentPlayer(player['player'][0],"Test Tournament")
         registerTournamentPlayer(player['player'][0],"U.S. Open 2016")
     pairings1 = tournamentSwissPairings("Test Tournament")
+
+#START PAIRINGS
     for pair in pairings1:
         print pair
     pairings2 = tournamentSwissPairings("U.S. Open 2016")
@@ -153,7 +155,8 @@ def testTournamentPairings():
     print "End of pairings. Final standings"
     for position in tournamentStandings("U.S. Open 2016"):
         print position
-    
+#END PAIRINGS    
+
 #    print "Second round:"
 #    pairings2 = tournamentSwissPairings("U.S. Open 2016")
 #    playRound("U.S. Open 2016",pairings2)

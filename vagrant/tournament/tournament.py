@@ -53,7 +53,7 @@ def registerPlayer(name):
     c.execute("INSERT INTO players (name) values (%s)" , (name,))
     c.execute("SELECT currval('player_id')") # from players where name = %s" , (name,)) 
     player_id = c.fetchall()[0][0]
-    c.execute("INSERT INTO standings (player_id, matches, wins, losses, draws) values ( %s, 0, 0, 0, 0 )" , (player_id,))
+    #c.execute("INSERT INTO standings (player_id, matches, wins, losses, draws) values ( %s, 0, 0, 0, 0 )" , (player_id,))
     DB.commit()
     DB.close()
 
@@ -70,7 +70,7 @@ def registerTournamentPlayer(name, tournament_name):
     c.execute("SELECT id from tournament where name = %s", (tournament_name,))
     tournament_id = c.fetchall()[0][0] 
     c.execute("INSERT INTO tournament_registry (tournament_id, player_id) values (%s, %s)", (tournament_id, player_id)) 
-    c.execute("INSERT INTO standings (tournament_id, player_id, matches, wins, losses, draws) values (%s, %s, 0, 0, 0, 0)", (tournament_id, player_id)) 
+    #c.execute("INSERT INTO standings (tournament_id, player_id, matches, wins, losses, draws) values (%s, %s, 0, 0, 0, 0)", (tournament_id, player_id)) 
     DB.commit()
     DB.close()
 
@@ -106,8 +106,8 @@ def reportMatch(winner, loser):
     DB = connect()
     c = DB.cursor()
     c.execute("INSERT into matches (winner, loser) values (%s, %s)", (winner, loser))
-    c.execute("UPDATE standings set wins=wins+1 where player_id=%s", (winner,))
-    c.execute("UPDATE standings set matches=matches+1 where player_id in (%s, %s)", (winner, loser))
+    #c.execute("UPDATE standings set wins=wins+1 where player_id=%s", (winner,))
+    #c.execute("UPDATE standings set matches=matches+1 where player_id in (%s, %s)", (winner, loser))
     DB.commit()
     DB.close()
 
@@ -125,16 +125,20 @@ def reportTournamentMatch(tournament_id,winner, loser, draw=False):
     """
     DB = connect()
     c = DB.cursor()
-    c.execute("INSERT into matches (winner, loser, draw) values (%s, %s, %s)", (winner, loser, draw))
+    if loser is None:
+        c.execute("INSERT into matches (winner) values (%s)", (winner,))
+    else:
+        c.execute("INSERT into matches (winner, loser, draw) values (%s, %s, %s)", (winner, loser, draw))
     c.execute("SELECT currval('match_seq_id')")
     match_id = c.fetchall()[0][0]
     c.execute("INSERT into tournament_matches (tournament_id, match_id) values (%s, %s)", (tournament_id,match_id))
-    if not draw:
-    	c.execute("UPDATE standings set wins=wins+1 where player_id=%s and tournament_id=%s", (winner,tournament_id))
-        c.execute("UPDATE standings set losses=losses+1 where player_id=%s and tournament_id=%s", (loser,tournament_id))
-    else:
-	c.execute("UPDATE standings set draws=draws+1 where player_id in (%s, %s) and tournament_id=%s", (winner, loser, tournament_id))
-    c.execute("UPDATE standings set matches=matches+1 where player_id in (%s, %s) and tournament_id=%s", (winner, loser,tournament_id))
+    #if not draw:
+    # 	c.execute("UPDATE standings set wins=wins+1 where player_id=%s and tournament_id=%s", (winner,tournament_id))
+    #    if loser != None:
+    #        c.execute("UPDATE standings set losses=losses+1 where player_id=%s and tournament_id=%s", (loser,tournament_id))
+    #else:
+    #	c.execute("UPDATE standings set draws=draws+1 where player_id in (%s, %s) and tournament_id=%s", (winner, loser, tournament_id))
+    #c.execute("UPDATE standings set matches=matches+1 where player_id in (%s, %s) and tournament_id=%s", (winner, loser,tournament_id))
     DB.commit()
     DB.close()
 
@@ -157,11 +161,11 @@ def swissPairings():
     #set matching groups
     DB = connect()
     c = DB.cursor()
-    c.execute("SELECT wins FROM standings GROUP BY wins ORDER BY WINS DESC")
+    c.execute("SELECT wins FROM v_standings GROUP BY wins ORDER BY WINS DESC")
     groups = [item[0] for item in c.fetchall()]
     pairings = []
     for i in groups:
-	c.execute("SELECT player_id from standings where wins=%s", (i,))
+	c.execute("SELECT id from v_standings where wins=%s", (i,))
         group_players = [item[0] for item in c.fetchall()]
         #combine players
 	#possible_matches = itertools.combinations(group_players,2)
@@ -322,8 +326,8 @@ def playRound(tournament_name, pairings_list):
         if len(players)==1 :
             print "bye for:"
             print players
-            c.execute("UPDATE standings set wins=wins+1 where player_id=%s and tournament_id=%s", (players[0][0],tournament_id))
-            
+            #c.execute("UPDATE standings set wins=wins+1 where player_id=%s and tournament_id=%s", (players[0][0],tournament_id))
+            reportTournamentMatch(tournament_id, players[0][0],None)
         else:
             outcome = random.randint(1,3)
             if outcome == 1:
