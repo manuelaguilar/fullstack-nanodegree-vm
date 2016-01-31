@@ -1,4 +1,3 @@
-import os
 import json
 
 
@@ -8,4 +7,3 @@ def loadPlayersFromJson(players_file):
     players = json.loads(players_json)
     players_json_file.close()
     return players
-    
