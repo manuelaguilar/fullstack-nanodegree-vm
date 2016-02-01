@@ -7,7 +7,7 @@ This project simulates tournament pairings for one or more tournaments.
 2. Execute the test driver:
   * ./tournament_test.py
 3. To run the multi-tournament with, 3 point matches, draws, and player byes, setup the database again:
-  * psql -f tourmament.sql
+  * psql -f tournament.sql
 4. Run the multi tournament test driver. This test driver creates 2 tournaments with registered players, but will only play matches for the U.S. Open tournament.
   * ./multi_tournament_test.py
 
