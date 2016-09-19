@@ -4,6 +4,7 @@ Product information used in this project can be found at http://www.mec.ca
 
 ## 1. Running the application
 
+To run this project
 ```
 cd /vagrant/catalog # code should be checked out here
 chmod u+x bootstrap.sh # make script executable
