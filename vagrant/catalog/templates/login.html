@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block titlebar %}Login{% endblock %}
+{% block head %}
+  {{ super() }}
+  {% include "gheaders.html" %}
+  {% endblock %}
+{%block login %}{% endblock %}
+{% block content%}
+    <div>
+        <h1>Welcome to my Udacious Catalog App</h1>
+        <h3>Sign in to add, edit, or remove items.</h3>
+        {% include "gbutton.html" %}
+        <div id="result"></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block titlebar %}Add New Item{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<h1>Add New Item</h1>
+<div class = 'flash'>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li> <strong> {{ message }} </strong> </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+{% endwith %}
+</div>
+<form action="#" method="POST">
+    <div>
+	    <label>Name</label>
+		<input type="text" name="name" placeholder="Product name">
+		<label>Price</label>
+		<input type="text" name="price" placeholder="00.00">
+		<label>Subcategory</label>
+		<input type="text" name="subcategory" placeholder="Product group">
+		<label>Description</label>
+        <textarea rows=20 cols=50 name="description" placeholder="Description"></textarea>
+    </div>
+	<div>
+        <button type="submit" id="submit" type="submit">Add</button>
+</form>
+{% endblock %}

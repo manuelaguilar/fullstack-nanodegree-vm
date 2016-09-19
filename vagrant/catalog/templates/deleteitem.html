@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block titlebar %}Delete Item{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<h1>Confirm item delete</h1>
+{% include "flash.html" %}
+<form action="#" method="POST">
+    <div>
+        <p><strong>Item {{item.name}} will be deleted</strong></p>
+    </div>
+	<div>
+        <button type="submit" id="submit" type="submit">Confirm Delete</button>
+    </div>
+</form>
+    <a href="{{url_for('showCategoryItemId', product_category_id=item.product_category_id,
+            category_item_id=item.id)}}"><button>Cancel</button></a>
+{% endblock %}

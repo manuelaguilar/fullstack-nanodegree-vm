@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block titlebar %}Edit Item{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<h1>Edit Item</h1>
+{% include "flash.html" %}
+<form action="#" method="POST">
+    <div class="itemdisplay">
+{% if not item.image_filename %}
+    <img src="{{url_for('static',filename='images/comingsoon.jpg')}}"/>
+{% else %}
+    <img src="{{url_for('static',filename='images/'+item.image_filename)}}"/>
+{% endif %}
+        <ul>
+            <li><label>Name</label>
+            <input type="text" name="name" placeholder="{{item.name}}"></li>
+            <li><label>Price</label>
+            <input type="text" name="price" placeholder="{{item.price}}"></li>
+            <li><label>Subcategory</label>
+            <input type="text" name="subcategory" placeholder="{{item.subcategory}}"></li>
+            <li><label>Description</label>
+            <textarea rows=20 cols=50 name="description" placeholder="{{item.description}}"></textarea></li>
+        </ul>
+    </div>
+	<div>
+        <button type="submit" id="submit" type="submit">Update</button>
+    </div>
+</form>
+<a href="{{url_for('showCategoryId',product_category_id=item.product_category_id)}}">
+    <button id="cancel">Cancel</button>
+</a>
+{% endblock %}

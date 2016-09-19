@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block titlebar %}Category Item{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<h1>{{item.name}}</h1>
+{% include "flash.html" %}
+<div class="itemdisplay">
+{% if not item.image_filename %}
+    <img src="{{url_for('static',filename='images/comingsoon.jpg')}}"/>
+{% else %}
+    <img src="{{url_for('static',filename='images/'+item.image_filename)}}"/>
+{% endif %}    
+<p>CAD$ {{item.price}}</p>
+<p>{{item.subcategory}}</p>
+<p>{{item.description}}</p>
+</div>
+{% endblock %}
