@@ -12,6 +12,7 @@ python application.py # start application
 ```
 
 ## 1. Contents
+```
 catalog
 +-- application.py - main application 
 +-- bootstrap.sh - shell script to rewrite database with data and download product image
@@ -42,7 +43,7 @@ catalog
 +-- data -- data scraping and preparation
 |   |   +-- productdata -- scrapy project to build data from mec.ca
 |   |   |   +-- product_catalog.json -- generated product data to bootstrap application
-
+```
 
 ## 2. Database design
 
